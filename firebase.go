@@ -7,13 +7,16 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
 type Reference struct {
-	Url     string
-	Postfix string
-	Client  *http.Client
+	url     string
+	postfix string
+	client  *http.Client
+	token   string
+	export  bool
 }
 
 // Retrieve a new Firebase reference for given url.
@@ -21,25 +24,48 @@ func NewReference(url string) *Reference {
 
 	// Initialize Reference struct.
 	r := &Reference{
-		Url:     url,
-		Postfix: ".json",
-		Client:  &http.Client{},
+		url:     url,
+		postfix: ".json",
+		client:  &http.Client{},
+		export:  false,
 	}
 
 	return r
 }
 
+func (r *Reference) Auth(token string) {
+	r.token = token
+}
+
+func (r *Reference) Export(toggle bool) {
+	r.export = toggle
+}
+
 // Execute a new HTTP Request.
 func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error) {
 
+	apiUrl := r.url + r.postfix
+
+	v := url.Values{}
+	if r.token != "" {
+		v.Set("auth", r.token)
+	}
+	if r.export == true {
+		v.Set("format", "export")
+	}
+	q := v.Encode()
+	if len(q) > 0 {
+		apiUrl = apiUrl + "?" + q
+	}
+
 	// Prepare HTTP Request.
-	req, err := http.NewRequest(method, r.Url+r.Postfix, nil)
+	req, err := http.NewRequest(method, apiUrl, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	// Make actual HTTP request.
-	resp, err := r.Client.Do(req)
+	resp, err := r.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +107,12 @@ func (r *Reference) Value(v interface{}) error {
 
 func (r *Reference) Write(v interface{}) error {
 
-	jsonData, err := json.Marshal(t.Mockup)
+	jsonData, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
 
-	_, err := r.newRequest("PUT", bytes.NewReader(jsonData))
+	_, err = r.executeRequest("PUT", bytes.NewReader(jsonData))
 	if err != nil {
 		return err
 	}
@@ -96,12 +122,12 @@ func (r *Reference) Write(v interface{}) error {
 
 func (r *Reference) Push(v interface{}) error {
 
-	jsonData, err := json.Marshal(t.Mockup)
+	jsonData, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
 
-	_, err := r.newRequest("POST", bytes.NewReader(jsonData))
+	_, err = r.executeRequest("POST", bytes.NewReader(jsonData))
 	if err != nil {
 		return err
 	}
@@ -111,12 +137,12 @@ func (r *Reference) Push(v interface{}) error {
 
 func (r *Reference) Update(v interface{}) error {
 
-	jsonData, err := json.Marshal(t.Mockup)
+	jsonData, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
 
-	_, err := r.newRequest("PATCH", bytes.NewReader(jsonData))
+	_, err = r.executeRequest("PATCH", bytes.NewReader(jsonData))
 	if err != nil {
 		return err
 	}
@@ -126,7 +152,7 @@ func (r *Reference) Update(v interface{}) error {
 
 func (r *Reference) Delete() error {
 
-	_, err := r.newRequest("DELETE", nil)
+	_, err := r.executeRequest("DELETE", nil)
 	if err != nil {
 		return err
 	}
