@@ -13,14 +13,14 @@ import (
 	"strings"
 )
 
-type Client interface {
+type client interface {
 	Do(req *http.Request) (resp *http.Response, err error)
 }
 
 type Reference struct {
 	url          string
 	postfix      string
-	client       Client
+	client       client
 	token        string
 	export       bool
 	response     *http.Response
