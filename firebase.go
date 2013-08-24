@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -12,10 +11,14 @@ import (
 	"strings"
 )
 
+type Client interface {
+	Do(req *http.Request) (resp *http.Response, err error)
+}
+
 type Reference struct {
 	url          string
 	postfix      string
-	client       *http.Client
+	client       Client
 	token        string
 	export       bool
 	response     *http.Response
@@ -68,35 +71,26 @@ func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error
 		apiUrl = apiUrl + "?" + q
 	}
 
-	fmt.Println("ApiURL:", apiUrl)
-
 	// Prepare HTTP Request.
 	req, err := http.NewRequest(method, apiUrl, body)
 	if err != nil {
-		fmt.Println("err1:", err)
 		return nil, err
 	}
 
-	client := &http.Client{}
-
 	// Make actual HTTP request.
-	if r.response, err = client.Do(req); err != nil {
-		fmt.Println("err2:", err)
+	if r.response, err = r.client.Do(req); err != nil {
 		return nil, err
 	}
 	defer r.response.Body.Close()
 
 	// Check status code for errors.
 	status := r.response.Status
-	fmt.Println("status:", status)
 	if strings.HasPrefix(status, "2") == false {
-		fmt.Println("err3:", err)
 		return nil, errors.New(status)
 	}
 
 	// Read body.
 	if r.responseBody, err = ioutil.ReadAll(r.response.Body); err != nil {
-		fmt.Println("err4:", err)
 		return nil, err
 	}
 
@@ -129,9 +123,6 @@ func (r *Reference) Write(v interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("v:", v)
-	fmt.Println("body:", string(jsonData))
 
 	// PUT the data to Firebase.
 	_, err = r.executeRequest("PUT", bytes.NewReader(jsonData))
@@ -169,12 +160,8 @@ func (r *Reference) Update(v interface{}) error {
 		return err
 	}
 
-	fmt.Println("v:", v)
-	fmt.Println("body:", string(jsonData))
-
 	// PATCH the data on Firebase.
 	_, err = r.executeRequest("PATCH", bytes.NewReader(jsonData))
-	fmt.Println("err:", err)
 	if err != nil {
 		return err
 	}
