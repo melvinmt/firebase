@@ -13,14 +13,14 @@ import (
 	"strings"
 )
 
-type Client interface {
+type clientInterface interface {
 	Do(req *http.Request) (resp *http.Response, err error)
 }
 
-type Reference struct {
+type reference struct {
 	url          string
 	postfix      string
-	client       Client
+	client       clientInterface
 	token        string
 	export       bool
 	response     *http.Response
@@ -28,10 +28,10 @@ type Reference struct {
 }
 
 // Retrieve a new Firebase reference for given url.
-func NewReference(url string) *Reference {
+func NewReference(url string) *reference {
 
-	// Initialize Reference struct.
-	r := &Reference{
+	// Initialize reference struct.
+	r := &reference{
 		url:     url,
 		postfix: ".json",
 		export:  false,
@@ -42,21 +42,21 @@ func NewReference(url string) *Reference {
 }
 
 // Uses the Firebase secret or Auth Token to authenticate.
-func (r *Reference) Auth(token string) *Reference {
+func (r *reference) Auth(token string) *reference {
 	r.token = token
 
 	return r
 }
 
 // Set to true if you want priority data to be returned.
-func (r *Reference) Export(toggle bool) *Reference {
+func (r *reference) Export(toggle bool) *reference {
 	r.export = toggle
 
 	return r
 }
 
 // Execute a new HTTP Request.
-func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error) {
+func (r *reference) executeRequest(method string, body io.Reader) ([]byte, error) {
 
 	apiUrl := r.url + r.postfix
 
@@ -101,8 +101,8 @@ func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error
 	return r.responseBody, nil
 }
 
-// Retrieve the current value for this Reference.
-func (r *Reference) Value(v interface{}) error {
+// Retrieve the current value for this reference.
+func (r *reference) Value(v interface{}) error {
 
 	// GET the data from Firebase.
 	resp, err := r.executeRequest("GET", nil)
@@ -119,8 +119,8 @@ func (r *Reference) Value(v interface{}) error {
 	return nil
 }
 
-// Set the value for this Reference (overwrites existing value).
-func (r *Reference) Write(v interface{}) error {
+// Set the value for this reference (overwrites existing value).
+func (r *reference) Write(v interface{}) error {
 
 	// JSON encode the data.
 	jsonData, err := json.Marshal(v)
@@ -137,8 +137,8 @@ func (r *Reference) Write(v interface{}) error {
 	return nil
 }
 
-// Pushes a new object to this Reference (effectively creates a list).
-func (r *Reference) Push(v interface{}) error {
+// Pushes a new object to this reference (effectively creates a list).
+func (r *reference) Push(v interface{}) error {
 
 	// JSON encode the data.
 	jsonData, err := json.Marshal(v)
@@ -156,7 +156,7 @@ func (r *Reference) Push(v interface{}) error {
 }
 
 // Update existing data.
-func (r *Reference) Update(v interface{}) error {
+func (r *reference) Update(v interface{}) error {
 
 	// JSON encode the data.
 	jsonData, err := json.Marshal(v)
@@ -173,8 +173,8 @@ func (r *Reference) Update(v interface{}) error {
 	return nil
 }
 
-// Delete any values for this Reference.
-func (r *Reference) Delete() error {
+// Delete any values for this reference.
+func (r *reference) Delete() error {
 
 	// DELETE the data on Firebase.
 	_, err := r.executeRequest("DELETE", nil)

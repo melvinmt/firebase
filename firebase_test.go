@@ -12,7 +12,7 @@ import (
 func TestThatNewReferenceWorks(t *testing.T) {
 	url := "https://SampleChat.firebaseIO-demo.com/users/fred/name"
 
-	var r *Reference
+	var r *reference
 	r = NewReference(url)
 	_ = r
 }
@@ -64,7 +64,7 @@ func TestThatWriteWorks(t *testing.T) {
 		Last:  "Swanson",
 	}
 
-	r := &Reference{
+	r := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "200 OK"},
@@ -75,7 +75,7 @@ func TestThatWriteWorks(t *testing.T) {
 		t.Error(err)
 	}
 
-	rn := &Reference{
+	rn := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "404 Not Found"},
@@ -97,7 +97,7 @@ func TestThatUpdateWorks(t *testing.T) {
 		Last:  "Swanson",
 	}
 
-	r := &Reference{
+	r := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "200 OK"},
@@ -108,7 +108,7 @@ func TestThatUpdateWorks(t *testing.T) {
 		t.Error(err)
 	}
 
-	rn := &Reference{
+	rn := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "404 Not Found"},
@@ -130,7 +130,7 @@ func TestThatPushWorks(t *testing.T) {
 		Last:  "Swanson",
 	}
 
-	r := &Reference{
+	r := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "200 OK"},
@@ -141,7 +141,7 @@ func TestThatPushWorks(t *testing.T) {
 		t.Error(err)
 	}
 
-	rn := &Reference{
+	rn := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "404 Not Found"},
@@ -160,7 +160,7 @@ func TestThatDeleteWorks(t *testing.T) {
 
 	person := StubPerson{}
 
-	r := &Reference{
+	r := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "200 OK"},
@@ -171,7 +171,7 @@ func TestThatDeleteWorks(t *testing.T) {
 		t.Error(err)
 	}
 
-	rn := &Reference{
+	rn := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "404 Not Found"},
@@ -193,7 +193,7 @@ func TestThatValueWorks(t *testing.T) {
 		Last:  "Swanson",
 	}
 
-	r := &Reference{
+	r := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "200 OK"},
@@ -210,7 +210,7 @@ func TestThatValueWorks(t *testing.T) {
 		t.Error("Invalid values returned.")
 	}
 
-	rn := &Reference{
+	rn := &reference{
 		url:     url,
 		postfix: ".json",
 		client:  &MockClient{person, "404 Not Found"},
@@ -227,7 +227,7 @@ func TestThatValueWorks(t *testing.T) {
 func TestThatAuthWorks(t *testing.T) {
 	url := "https://SampleChat.firebaseIO-demo.com/users/fred/name"
 
-	var r *Reference
+	var r *reference
 	r = NewReference(url).Auth("token").Auth("overwrite_token")
 	_ = r
 }
@@ -235,7 +235,7 @@ func TestThatAuthWorks(t *testing.T) {
 func TestThatExportWorks(t *testing.T) {
 	url := "https://SampleChat.firebaseIO-demo.com/users/fred/name"
 
-	var r *Reference
+	var r *reference
 	r = NewReference(url).Export(true).Export(false)
 	_ = r
 }
