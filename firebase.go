@@ -1,3 +1,5 @@
+/* A Go package for the Firebase API #golang
+ */
 package firebase
 
 import (
@@ -39,12 +41,14 @@ func NewReference(url string) *Reference {
 	return r
 }
 
+// Uses the Firebase secret or Auth Token to authenticate.
 func (r *Reference) Auth(token string) *Reference {
 	r.token = token
 
 	return r
 }
 
+// Set to true if you want priority data to be returned.
 func (r *Reference) Export(toggle bool) *Reference {
 	r.export = toggle
 
