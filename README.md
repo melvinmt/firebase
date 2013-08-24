@@ -17,7 +17,7 @@ And add it to your go file:
 package name
 
 import (
-    "github.com/melvinmt/firebase
+    "github.com/melvinmt/firebase"
 )
 ```
 
