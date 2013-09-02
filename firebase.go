@@ -58,6 +58,9 @@ func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error
 		apiUrl = apiUrl + "?" + q
 	}
 
+	// Adding tiny sleep to prevent rate limited requests.
+	time.Sleep(1 * time.Millisecond)
+
 	// Prepare HTTP Request.
 	req, err := http.NewRequest(method, apiUrl, nil)
 	if err != nil {
