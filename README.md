@@ -65,7 +65,7 @@ func main() {
     // Now, we're going to retrieve the person.
     personUrl := "https://SampleChat.firebaseIO-demo.com/users/fred"
 
-    personRef := firebase.NewReference(url).Export(false)
+    personRef := firebase.NewReference(personUrl).Export(false)
 
     fred := Person{}
 
