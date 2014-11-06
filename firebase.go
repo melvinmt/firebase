@@ -101,9 +101,9 @@ func (r *Reference) executeRequest(method string, body []byte) ([]byte, error) {
 			return nil, err
 		}
 	}
-	// Check status code for errors.
 	defer r.response.Body.Close()
 
+	// Check status code for errors.
 	status := r.response.Status
 	if strings.HasPrefix(status, "2") == false {
 		return nil, errors.New(status)
