@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -57,7 +56,7 @@ func (r *Reference) Export(toggle bool) *Reference {
 }
 
 // Execute a new HTTP Request.
-func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error) {
+func (r *Reference) executeRequest(method string, body []byte) ([]byte, error) {
 
 	apiUrl := r.url + r.postfix
 
@@ -80,7 +79,7 @@ func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error
 	time.Sleep(10 * time.Millisecond)
 
 	// Prepare HTTP Request.
-	req, err := http.NewRequest(method, apiUrl, body)
+	req, err := http.NewRequest(method, apiUrl, bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +87,19 @@ func (r *Reference) executeRequest(method string, body io.Reader) ([]byte, error
 	// Make actual HTTP request.
 	if r.response, err = r.client.Do(req); err != nil {
 		return nil, err
+	}
+
+	//Poor man's 307 handling.
+	//This code will replay the previous request using the new url in the Location header
+	//Hopefully https://code.google.com/p/go/issues/detail?id=7912 gets resolved so we can remove this.
+	if strings.HasPrefix(r.response.Status, "307 ") {
+		r.response.Body.Close() // close the original
+
+		location := r.response.Header.Get("Location")
+		req, err = http.NewRequest(method, location, bytes.NewReader(body))
+		if r.response, err = r.client.Do(req); err != nil {
+			return nil, err
+		}
 	}
 	defer r.response.Body.Close()
 
@@ -133,7 +145,7 @@ func (r *Reference) Write(v interface{}) error {
 	}
 
 	// PUT the data to Firebase.
-	_, err = r.executeRequest("PUT", bytes.NewReader(jsonData))
+	_, err = r.executeRequest("PUT", jsonData)
 	if err != nil {
 		return err
 	}
@@ -151,7 +163,7 @@ func (r *Reference) Push(v interface{}) error {
 	}
 
 	// POST the data to Firebase.
-	_, err = r.executeRequest("POST", bytes.NewReader(jsonData))
+	_, err = r.executeRequest("POST", jsonData)
 	if err != nil {
 		return err
 	}
@@ -169,7 +181,7 @@ func (r *Reference) Update(v interface{}) error {
 	}
 
 	// PATCH the data on Firebase.
-	_, err = r.executeRequest("PATCH", bytes.NewReader(jsonData))
+	_, err = r.executeRequest("PATCH", jsonData)
 	if err != nil {
 		return err
 	}
