@@ -80,6 +80,7 @@ func (r *Reference) executeRequest(method string, body []byte) ([]byte, error) {
 
 	// Prepare HTTP Request.
 	req, err := http.NewRequest(method, apiUrl, bytes.NewReader(body))
+	req.Close = true
 	if err != nil {
 		return nil, err
 	}
