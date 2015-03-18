@@ -67,7 +67,7 @@ func main() {
 
     personRef := firebase.NewReference(personUrl).Export(false)
 
-    fred := Person{}
+    fred := &Person{}
 
     if err = personRef.Value(fred); err != nil {
         panic(err)
