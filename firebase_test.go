@@ -239,3 +239,23 @@ func TestThatExportWorks(t *testing.T) {
 	r = NewReference(url).Export(true).Export(false)
 	_ = r
 }
+
+func TestThatChildWorks(t *testing.T) {
+	url := "https://SampleChat.firebaseIO-demo.com/users/fred"
+
+	parent := NewReference(url).Auth("secret-token")
+
+	child := parent.Child("name")
+	if child.url != url+"/name" {
+		t.Error("Expected child URL to equal", url+"/name", ", got", child.url)
+	}
+
+	child = parent.Child("/name")
+	if child.url != url+"/name" {
+		t.Error("Expected child URL to equal", url+"/name", ", got", child.url)
+	}
+
+	if child.token != parent.token {
+		t.Error("Expected child to receive parent's auth token.")
+	}
+}
