@@ -200,3 +200,23 @@ func (r *Reference) Delete() error {
 
 	return nil
 }
+
+func (r *Reference) Child(path string) *Reference {
+	url := r.url
+
+	// Append path.
+	if url[len(url)-1] == '/' {
+		url = url[:len(url)-1]
+	}
+	if path[0] == '/' {
+		url += path
+	} else {
+		url += "/" + path
+	}
+
+	// Transfer token.
+	ref := NewReference(url)
+	ref.token = r.token
+
+	return ref
+}
