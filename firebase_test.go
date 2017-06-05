@@ -67,7 +67,7 @@ func TestThatWriteWorks(t *testing.T) {
 	r := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "200 OK"},
+		Client:  &MockClient{person, "200 OK"},
 	}
 
 	err = r.Write(person)
@@ -78,7 +78,7 @@ func TestThatWriteWorks(t *testing.T) {
 	rn := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "404 Not Found"},
+		Client:  &MockClient{person, "404 Not Found"},
 	}
 
 	err = rn.Write(person)
@@ -100,7 +100,7 @@ func TestThatUpdateWorks(t *testing.T) {
 	r := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "200 OK"},
+		Client:  &MockClient{person, "200 OK"},
 	}
 
 	err = r.Update(person)
@@ -111,7 +111,7 @@ func TestThatUpdateWorks(t *testing.T) {
 	rn := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "404 Not Found"},
+		Client:  &MockClient{person, "404 Not Found"},
 	}
 
 	err = rn.Update(person)
@@ -133,7 +133,7 @@ func TestThatPushWorks(t *testing.T) {
 	r := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "200 OK"},
+		Client:  &MockClient{person, "200 OK"},
 	}
 
 	err = r.Push(person)
@@ -144,7 +144,7 @@ func TestThatPushWorks(t *testing.T) {
 	rn := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "404 Not Found"},
+		Client:  &MockClient{person, "404 Not Found"},
 	}
 
 	err = rn.Push(person)
@@ -163,7 +163,7 @@ func TestThatDeleteWorks(t *testing.T) {
 	r := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "200 OK"},
+		Client:  &MockClient{person, "200 OK"},
 	}
 
 	err = r.Delete()
@@ -174,7 +174,7 @@ func TestThatDeleteWorks(t *testing.T) {
 	rn := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "404 Not Found"},
+		Client:  &MockClient{person, "404 Not Found"},
 	}
 
 	err = rn.Delete()
@@ -196,7 +196,7 @@ func TestThatValueWorks(t *testing.T) {
 	r := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "200 OK"},
+		Client:  &MockClient{person, "200 OK"},
 	}
 
 	norsep := StubPerson{}
@@ -213,7 +213,7 @@ func TestThatValueWorks(t *testing.T) {
 	rn := &Reference{
 		url:     url,
 		postfix: ".json",
-		client:  &MockClient{person, "404 Not Found"},
+		Client:  &MockClient{person, "404 Not Found"},
 	}
 
 	norsep2 := StubPerson{}

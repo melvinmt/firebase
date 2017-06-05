@@ -20,7 +20,7 @@ type client interface {
 type Reference struct {
 	url          string
 	postfix      string
-	client       client
+	Client       client
 	token        string
 	export       bool
 	response     *http.Response
@@ -35,7 +35,7 @@ func NewReference(url string) *Reference {
 		url:     url,
 		postfix: ".json",
 		export:  false,
-		client:  &http.Client{},
+		Client:  &http.Client{},
 	}
 
 	return r
@@ -85,7 +85,7 @@ func (r *Reference) executeRequest(method string, body []byte) ([]byte, error) {
 	}
 
 	// Make actual HTTP request.
-	if r.response, err = r.client.Do(req); err != nil {
+	if r.response, err = r.Client.Do(req); err != nil {
 		return nil, err
 	}
 
@@ -97,7 +97,7 @@ func (r *Reference) executeRequest(method string, body []byte) ([]byte, error) {
 
 		location := r.response.Header.Get("Location")
 		req, err = http.NewRequest(method, location, bytes.NewReader(body))
-		if r.response, err = r.client.Do(req); err != nil {
+		if r.response, err = r.Client.Do(req); err != nil {
 			return nil, err
 		}
 	}
